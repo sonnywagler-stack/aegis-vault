@@ -1,0 +1,103 @@
+{%- comment -%} Pages du compte client (comptes classiques). Un seul fichier, la page est choisie selon le gabarit. {%- endcomment -%}
+<section class="section page-top">
+  <div class="container container--narrow account">
+    {%- case template.name -%}
+      {%- when 'customers/login' -%}
+        <h1 class="page-title">Connexion</h1>
+        {%- form 'customer_login', class: 'form' -%}
+          {%- if form.errors -%}<p class="form__status err">{{ form.errors | default_errors }}</p>{%- endif -%}
+          <label>Email<input type="email" name="customer[email]" autocomplete="email" required></label>
+          <label>Mot de passe<input type="password" name="customer[password]" autocomplete="current-password" required></label>
+          <button class="btn btn--gold">Se connecter</button>
+          <p class="account__links"><a href="#recover" data-toggle-recover>Mot de passe oublié ?</a> · <a href="{{ routes.account_register_url }}">Créer un compte</a></p>
+        {%- endform -%}
+        {%- form 'recover_customer_password', class: 'form account__recover', id: 'recover' -%}
+          {%- if form.posted_successfully? -%}<p class="form__status ok">Un email de réinitialisation vous a été envoyé.</p>{%- endif -%}
+          <h2>Réinitialiser le mot de passe</h2>
+          <label>Email<input type="email" name="email" autocomplete="email" required></label>
+          <button class="btn btn--ghost">Envoyer</button>
+        {%- endform -%}
+
+      {%- when 'customers/register' -%}
+        <h1 class="page-title">Créer un compte</h1>
+        {%- form 'create_customer', class: 'form' -%}
+          {%- if form.errors -%}<p class="form__status err">{{ form.errors | default_errors }}</p>{%- endif -%}
+          <div class="form__row">
+            <label>Prénom<input type="text" name="customer[first_name]" autocomplete="given-name"></label>
+            <label>Nom<input type="text" name="customer[last_name]" autocomplete="family-name"></label>
+          </div>
+          <label>Email<input type="email" name="customer[email]" autocomplete="email" required></label>
+          <label>Mot de passe<input type="password" name="customer[password]" autocomplete="new-password" required></label>
+          <button class="btn btn--gold">Créer mon compte</button>
+        {%- endform -%}
+
+      {%- when 'customers/activate_account' -%}
+        <h1 class="page-title">Activer mon compte</h1>
+        {%- form 'activate_customer_password', class: 'form' -%}
+          {%- if form.errors -%}<p class="form__status err">{{ form.errors | default_errors }}</p>{%- endif -%}
+          <label>Mot de passe<input type="password" name="customer[password]" autocomplete="new-password" required></label>
+          <label>Confirmation<input type="password" name="customer[password_confirmation]" autocomplete="new-password" required></label>
+          <button class="btn btn--gold">Activer</button>
+        {%- endform -%}
+
+      {%- when 'customers/reset_password' -%}
+        <h1 class="page-title">Nouveau mot de passe</h1>
+        {%- form 'reset_customer_password', class: 'form' -%}
+          {%- if form.errors -%}<p class="form__status err">{{ form.errors | default_errors }}</p>{%- endif -%}
+          <label>Mot de passe<input type="password" name="customer[password]" autocomplete="new-password" required></label>
+          <label>Confirmation<input type="password" name="customer[password_confirmation]" autocomplete="new-password" required></label>
+          <button class="btn btn--gold">Enregistrer</button>
+        {%- endform -%}
+
+      {%- when 'customers/account' -%}
+        <h1 class="page-title">Mon compte</h1>
+        <p>Bonjour {{ customer.first_name | default: customer.email }} · <a href="{{ routes.account_logout_url }}">Se déconnecter</a></p>
+        <h2>Mes commandes</h2>
+        {%- paginate customer.orders by 20 -%}
+          {%- for order in customer.orders -%}
+            <p class="account__order"><a href="{{ order.customer_url }}">{{ order.name }}</a> <span>{{ order.created_at | date: '%d/%m/%Y' }}</span> <span>{{ order.fulfillment_status_label }}</span> <strong>{{ order.total_price | money }}</strong></p>
+          {%- else -%}
+            <p>Vous n'avez pas encore passé de commande.</p>
+          {%- endfor -%}
+          {% render 'pagination', paginate: paginate %}
+        {%- endpaginate -%}
+        <p><a class="btn btn--ghost" href="{{ routes.account_addresses_url }}">Mes adresses ({{ customer.addresses_count }})</a></p>
+
+      {%- when 'customers/order' -%}
+        <h1 class="page-title">Commande {{ order.name }}</h1>
+        <p>Passée le {{ order.created_at | date: '%d/%m/%Y' }} · {{ order.financial_status_label }} · {{ order.fulfillment_status_label }}</p>
+        {%- for item in order.line_items -%}
+          <p class="account__order"><span>{{ item.quantity }} × {{ item.title | escape }}</span><strong>{{ item.final_line_price | money }}</strong></p>
+        {%- endfor -%}
+        <p class="account__order"><span>Livraison</span><strong>{{ order.shipping_price | money }}</strong></p>
+        <p class="account__order"><span>Total</span><strong>{{ order.total_price | money }}</strong></p>
+        <p><a href="{{ routes.account_url }}">← Retour au compte</a></p>
+
+      {%- when 'customers/addresses' -%}
+        <h1 class="page-title">Mes adresses</h1>
+        {%- for address in customer.addresses -%}
+          <div class="account__address">{{ address | format_address }}{% if address == customer.default_address %}<em>Adresse par défaut</em>{% endif %}</div>
+        {%- endfor -%}
+        <h2>Ajouter une adresse</h2>
+        {%- form 'customer_address', customer.new_address, class: 'form' -%}
+          <div class="form__row">
+            <label>Prénom<input type="text" name="address[first_name]" autocomplete="given-name"></label>
+            <label>Nom<input type="text" name="address[last_name]" autocomplete="family-name"></label>
+          </div>
+          <label>Adresse<input type="text" name="address[address1]" autocomplete="address-line1"></label>
+          <div class="form__row">
+            <label>Code postal<input type="text" name="address[zip]" autocomplete="postal-code"></label>
+            <label>Ville<input type="text" name="address[city]" autocomplete="address-level2"></label>
+          </div>
+          <label>Pays<select name="address[country]" data-default="France">{{ all_country_option_tags }}</select></label>
+          <label class="checkbox"><input type="checkbox" name="address[default]" value="1"> Adresse par défaut</label>
+          <button class="btn btn--gold">Enregistrer</button>
+        {%- endform -%}
+        <p><a href="{{ routes.account_url }}">← Retour au compte</a></p>
+    {%- endcase -%}
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Compte client" }
+{% endschema %}

@@ -1,0 +1,77 @@
+{%- assign vault = section.settings.product -%}
+<section class="section{% if section.settings.alt %} section--alt{% endif %}" id="{{ section.settings.anchor | default: section.id }}">
+  <div class="container">
+    <header class="section__head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h2>{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
+    </header>
+
+    <div class="config reveal"
+      data-wall-config
+      data-max-cols="{{ section.settings.max_cols }}"
+      data-max-rows="{{ section.settings.max_rows }}"
+      {%- if vault %}
+      data-variant="{{ vault.selected_or_first_available_variant.id }}"
+      data-price="{{ vault.selected_or_first_available_variant.price }}"
+      data-available="{{ vault.available }}"
+      {%- endif %}
+      data-tiers='[[{{ section.settings.tier2_qty }},{{ section.settings.tier2_pct }}],[{{ section.settings.tier1_qty }},{{ section.settings.tier1_pct }}]]'>
+      <div class="config__controls">
+        <div class="stepper">
+          <span>Modules en largeur</span>
+          <div><button type="button" data-step="cols" data-d="-1" aria-label="Moins de modules en largeur">−</button><output data-out="cols">2</output><button type="button" data-step="cols" data-d="1" aria-label="Plus de modules en largeur">+</button></div>
+        </div>
+        <div class="stepper">
+          <span>Modules en profondeur</span>
+          <div><button type="button" data-step="rows" data-d="-1" aria-label="Moins de modules en profondeur">−</button><output data-out="rows">1</output><button type="button" data-step="rows" data-d="1" aria-label="Plus de modules en profondeur">+</button></div>
+        </div>
+
+        <dl class="config__stats">
+          <div><dt>Modules</dt><dd data-stat="modules">2</dd></div>
+          <div><dt>ETB rangées</dt><dd data-stat="etb">18</dd></div>
+          <div><dt>Surface au sol</dt><dd data-stat="size">1 240 × 545 mm</dd></div>
+          <div><dt>Poids chargé</dt><dd data-stat="weight">≈ 40 kg</dd></div>
+        </dl>
+
+        {%- if vault -%}
+          <div class="config__price">
+            <span>Total</span>
+            <strong data-stat="price"></strong>
+            <small data-stat="saving"></small>
+          </div>
+          <button type="button" class="btn btn--gold btn--block" data-config-add{% unless vault.available %} disabled{% endunless %}>
+            {%- if vault.available -%}Ajouter au panier{%- else -%}Bientôt disponible{%- endif -%}
+          </button>
+        {%- else -%}
+          <p class="config__note">Choisissez le produit Vault 3×3 dans les réglages de cette section pour afficher le prix.</p>
+        {%- endif -%}
+      </div>
+      <div class="config__preview">
+        <svg data-wall-plan role="img" aria-label="Vue de dessus du mur de modules"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Configurateur de mur",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Ancre", "default": "mur" },
+    { "type": "checkbox", "id": "alt", "label": "Fond alterné", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "Surtitre", "default": "Configurateur" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Composez votre mur" },
+    { "type": "textarea", "id": "text", "label": "Texte", "default": "Les modules s'accrochent côte à côte et dos à dos. Choisissez votre grille, on calcule le reste." },
+    { "type": "product", "id": "product", "label": "Produit Vault 3×3" },
+    { "type": "range", "id": "max_cols", "label": "Modules max en largeur", "min": 2, "max": 8, "step": 1, "default": 5 },
+    { "type": "range", "id": "max_rows", "label": "Modules max en profondeur", "min": 1, "max": 4, "step": 1, "default": 3 },
+    { "type": "header", "content": "Remise mur affichée", "info": "Doit correspondre aux remises automatiques créées dans Shopify (Remises)." },
+    { "type": "number", "id": "tier1_qty", "label": "Palier 1 : dès (modules)", "default": 2 },
+    { "type": "number", "id": "tier1_pct", "label": "Palier 1 : remise (%)", "default": 5 },
+    { "type": "number", "id": "tier2_qty", "label": "Palier 2 : dès (modules)", "default": 4 },
+    { "type": "number", "id": "tier2_pct", "label": "Palier 2 : remise (%)", "default": 10 }
+  ],
+  "presets": [ { "name": "Configurateur de mur" } ]
+}
+{% endschema %}

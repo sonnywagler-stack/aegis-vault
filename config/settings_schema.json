@@ -1,0 +1,31 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Aegis Vault",
+    "theme_version": "1.0.0",
+    "theme_author": "Aegis Vault",
+    "theme_documentation_url": "https://github.com/sonnywagler-stack/aegis-vault",
+    "theme_support_url": "https://github.com/sonnywagler-stack/aegis-vault"
+  },
+  {
+    "name": "Logo",
+    "settings": [
+      { "type": "image_picker", "id": "logo", "label": "Logo", "info": "Sans logo, l'écusson et le nom « AEGIS VAULT » s'affichent." },
+      { "type": "image_picker", "id": "favicon", "label": "Favicon", "info": "32 × 32 px" }
+    ]
+  },
+  {
+    "name": "Couleurs",
+    "settings": [
+      { "type": "color", "id": "color_background", "label": "Fond", "default": "#0b0f14" },
+      { "type": "color", "id": "color_accent", "label": "Accent (or)", "default": "#d4a843" },
+      { "type": "color", "id": "color_accent_light", "label": "Accent clair (dégradé)", "default": "#f0cf7a" }
+    ]
+  },
+  {
+    "name": "Réseaux sociaux",
+    "settings": [
+      { "type": "url", "id": "social_instagram", "label": "Instagram" }
+    ]
+  }
+]

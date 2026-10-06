@@ -1,0 +1,58 @@
+<section class="section{% if section.settings.alt %} section--alt{% endif %}" id="{{ section.settings.anchor | default: section.id }}">
+  <div class="container specs">
+    <div class="specs__plan reveal">
+      <svg data-vault-plan viewBox="0 0 700 640" role="img" aria-label="Vue de dessus cotée : module 617 × 545 mm, 9 compartiments de 195 × 171 mm"></svg>
+    </div>
+    <div class="specs__table reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h2>{{ section.settings.heading }}</h2>
+      <dl class="spec-list">
+        {%- for block in section.blocks -%}
+          <div {{ block.shopify_attributes }}>
+            <dt>{{ block.settings.label }}</dt>
+            <dd>{{ block.settings.value }}{% if block.settings.note != blank %}<small>{{ block.settings.note }}</small>{% endif %}</dd>
+          </div>
+        {%- endfor -%}
+      </dl>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Fiche technique",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Ancre", "default": "specs" },
+    { "type": "checkbox", "id": "alt", "label": "Fond alterné", "default": true },
+    { "type": "text", "id": "eyebrow", "label": "Surtitre", "default": "Fiche technique" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Les cotes" }
+  ],
+  "blocks": [
+    {
+      "type": "spec",
+      "name": "Caractéristique",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Libellé", "default": "Caractéristique" },
+        { "type": "text", "id": "value", "label": "Valeur", "default": "Valeur" },
+        { "type": "text", "id": "note", "label": "Précision" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Fiche technique",
+      "blocks": [
+        { "type": "spec", "settings": { "label": "Encombrement", "value": "617 × 545 mm" } },
+        { "type": "spec", "settings": { "label": "Hauteur du caisson", "value": "118 mm", "note": "fond 16 + paroi 88 + cadres 3 + 3 + couvercle 8" } },
+        { "type": "spec", "settings": { "label": "Compartiment", "value": "195 × 171 × 94 mm" } },
+        { "type": "spec", "settings": { "label": "ETB compatible", "value": "192 × 168 × 92 mm" } },
+        { "type": "spec", "settings": { "label": "Matière", "value": "PMMA coulé transparent 8 mm, cadres 3 mm" } },
+        { "type": "spec", "settings": { "label": "Aimants", "value": "18 néodyme N52 Ø5 × 3 mm" } },
+        { "type": "spec", "settings": { "label": "Roulettes", "value": "4, platine 40 × 40, 25 kg chacune, 2 avec frein" } },
+        { "type": "spec", "settings": { "label": "Poids", "value": "≈ 14 kg à vide, ≈ 20 kg avec 9 ETB" } },
+        { "type": "spec", "settings": { "label": "Écart entre modules", "value": "6 mm (pastilles 3 + 3)" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

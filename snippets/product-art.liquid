@@ -1,0 +1,15 @@
+{%- comment -%}
+  Illustration d'un produit sans photo, dessinée par aegis.js à partir des cotes réelles.
+  Choisie d'après les tags du produit : vault, aimants, roulettes, sinon vitrine solo.
+{%- endcomment -%}
+{%- liquid
+  assign art = 'solo'
+  if product.tags contains 'vault'
+    assign art = 'vault'
+  elsif product.tags contains 'aimants'
+    assign art = 'magnets'
+  elsif product.tags contains 'roulettes'
+    assign art = 'wheels'
+  endif
+-%}
+<div class="product-art" data-art="{{ art }}" role="img" aria-label="{{ product.title | escape }}"></div>

@@ -1,0 +1,74 @@
+<section class="hero">
+  <div class="hero__glow" aria-hidden="true"></div>
+  <div class="container hero__inner">
+    <div class="hero__content reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h1>{{ section.settings.heading }}</h1>
+      {%- if section.settings.text != blank -%}<div class="hero__lead">{{ section.settings.text }}</div>{%- endif -%}
+      <div class="hero__cta">
+        {%- if section.settings.button_label != blank -%}
+          <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="btn btn--gold">{{ section.settings.button_label }}</a>
+        {%- endif -%}
+        {%- if section.settings.button2_label != blank -%}
+          <a href="{{ section.settings.button2_link | default: '#vault' }}" class="btn btn--ghost">{{ section.settings.button2_label }}</a>
+        {%- endif -%}
+      </div>
+      {%- if section.blocks.size > 0 -%}
+        <ul class="hero__badges">
+          {%- for block in section.blocks -%}
+            <li {{ block.shopify_attributes }}><span>{{ block.settings.value }}</span> {{ block.settings.label }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+
+    <div class="hero__visual reveal">
+      {%- if section.settings.image -%}
+        {{ section.settings.image | image_url: width: 1200 | image_tag: class: 'hero__image', sizes: '(min-width: 960px) 50vw, 100vw', widths: '600, 900, 1200', loading: 'eager' }}
+      {%- else -%}
+        <svg class="iso" data-vault-iso viewBox="0 0 520 440" role="img" aria-label="Illustration du module Vault 3×3 : 9 compartiments, couvercle soulevé, roulettes"></svg>
+        <div class="iso__toggle">
+          <button class="chip is-active" data-lid="open">Couvercle ouvert</button>
+          <button class="chip" data-lid="closed">Fermé</button>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bannière d'accueil",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Surtitre", "default": "Vitrines acryliques pour collectionneurs" },
+    { "type": "inline_richtext", "id": "heading", "label": "Titre", "default": "Neuf ETB.<br>Un seul <em>coffre</em>.", "info": "Le texte en italique s'affiche en or." },
+    { "type": "richtext", "id": "text", "label": "Texte", "default": "<p>Le Vault 3×3 range, protège et expose 9 coffrets Dresseur d'élite dans un module en acrylique coulé 8 mm, sur roulettes, fermé par un couvercle aimanté. Accrochez plusieurs modules entre eux et votre collection devient un mur.</p>" },
+    { "type": "text", "id": "button_label", "label": "Bouton principal", "default": "Commander le Vault 3×3" },
+    { "type": "url", "id": "button_link", "label": "Lien du bouton principal" },
+    { "type": "text", "id": "button2_label", "label": "Bouton secondaire", "default": "Voir les détails" },
+    { "type": "url", "id": "button2_link", "label": "Lien du bouton secondaire" },
+    { "type": "image_picker", "id": "image", "label": "Photo (remplace l'illustration 3D)" }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Chiffre clé",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "value", "label": "Valeur", "default": "9" },
+        { "type": "text", "id": "label", "label": "Libellé", "default": "ETB par module" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bannière d'accueil",
+      "blocks": [
+        { "type": "badge", "settings": { "value": "9", "label": "ETB par module" } },
+        { "type": "badge", "settings": { "value": "8 mm", "label": "PMMA coulé" } },
+        { "type": "badge", "settings": { "value": "18", "label": "aimants néodyme" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,11 @@
+{%- comment -%} Prix d'un produit ou d'une variante. Paramètres : product, variant (optionnel) {%- endcomment -%}
+{%- liquid
+  assign target = variant | default: product.selected_or_first_available_variant
+  assign price = target.price | default: product.price
+  assign compare = target.compare_at_price
+-%}
+<span class="price" data-price>
+  {%- if product.price_varies and variant == blank -%}À partir de {% endif -%}
+  {{ price | money }}
+  {%- if compare > price -%} <s class="price__compare">{{ compare | money }}</s>{%- endif -%}
+</span>

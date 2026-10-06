@@ -1,0 +1,82 @@
+<footer class="footer">
+  <div class="container footer__inner">
+    <div>
+      {% render 'logo' %}
+      {%- if section.settings.tagline != blank -%}
+        <p class="footer__tag">{{ section.settings.tagline }}</p>
+      {%- endif -%}
+      {%- if settings.social_instagram != blank -%}
+        <a class="footer__social" href="{{ settings.social_instagram }}" target="_blank" rel="noopener">Instagram</a>
+      {%- endif -%}
+    </div>
+
+    {%- for block in section.blocks -%}
+      {%- assign menu = linklists[block.settings.menu] -%}
+      <div {{ block.shopify_attributes }}>
+        <h4>{{ block.settings.heading | default: menu.title }}</h4>
+        {%- for link in menu.links -%}
+          <a href="{{ link.url }}">{{ link.title | escape }}</a>
+        {%- endfor -%}
+      </div>
+    {%- endfor -%}
+
+    {%- if section.blocks.size == 0 -%}
+      <div>
+        <h4>Boutique</h4>
+        <a href="{{ routes.all_products_collection_url }}">Tous les produits</a>
+        <a href="{{ routes.root_url }}#mur">Configurer un mur</a>
+      </div>
+      <div>
+        <h4>Aide</h4>
+        <a href="{{ routes.root_url }}#faq">FAQ</a>
+        <a href="{{ routes.root_url }}#specs">Fiche technique</a>
+        <a href="{{ routes.root_url }}#contact">Contact</a>
+      </div>
+      <div>
+        <h4>Légal</h4>
+        {%- for policy in shop.policies -%}
+          <a href="{{ policy.url }}">{{ policy.title | escape }}</a>
+        {%- else -%}
+          <span class="footer__muted">Ajoutez vos politiques dans Réglages › Politiques</span>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="container footer__bottom">
+    <p>© {{ 'now' | date: '%Y' }} {{ shop.name }}. Tous droits réservés.</p>
+    {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
+      <ul class="payment-icons" aria-label="Moyens de paiement">
+        {%- for type in shop.enabled_payment_types -%}
+          <li>{{ type | payment_type_svg_tag }}</li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+    {%- if section.settings.legal != blank -%}
+      <p class="footer__legal">{{ section.settings.legal }}</p>
+    {%- endif -%}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Pied de page",
+  "class": "section-footer",
+  "settings": [
+    { "type": "text", "id": "tagline", "label": "Accroche", "default": "Vitrines acryliques pour collectionneurs exigeants." },
+    { "type": "checkbox", "id": "show_payment_icons", "label": "Afficher les moyens de paiement", "default": true },
+    { "type": "text", "id": "legal", "label": "Mention légale", "default": "Pokémon et ETB sont des marques de leurs propriétaires respectifs. Aegis Vault est une marque indépendante." }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Colonne de liens",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Titre" },
+        { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,23 @@
+{%- layout none -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carte cadeau {{ shop.name }}</title>
+  {{ 'aegis.css' | asset_url | stylesheet_tag }}
+  {{ content_for_header }}
+</head>
+<body class="template-gift-card">
+  <section class="password">
+    <div class="password__inner">
+      {% render 'logo' %}
+      <p class="eyebrow">Carte cadeau</p>
+      <h1>{{ gift_card.balance | money }}</h1>
+      {%- if gift_card.expired -%}<p>Cette carte a expiré.</p>{%- endif -%}
+      <p class="giftcard__code">{{ gift_card.code | format_code }}</p>
+      <a class="btn btn--gold" href="{{ shop.url }}">Utiliser en boutique</a>
+    </div>
+  </section>
+</body>
+</html>

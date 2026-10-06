@@ -1,0 +1,28 @@
+<section class="section page-top">
+  <div class="container">
+    <header class="section__head"><h1 class="page-title">{{ blog.title | escape }}</h1></header>
+    {%- paginate blog.articles by 9 -%}
+      <div class="articles">
+        {%- for article in blog.articles -%}
+          <article class="article-card">
+            {%- if article.image -%}
+              <a href="{{ article.url }}">{{ article.image | image_url: width: 700 | image_tag: loading: 'lazy', alt: article.title }}</a>
+            {%- endif -%}
+            <div class="article-card__body">
+              <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%d/%m/%Y' }}</time>
+              <h2><a href="{{ article.url }}">{{ article.title | escape }}</a></h2>
+              <p>{{ article.excerpt_or_content | strip_html | truncatewords: 30 }}</p>
+            </div>
+          </article>
+        {%- else -%}
+          <p class="empty">Aucun article pour le moment.</p>
+        {%- endfor -%}
+      </div>
+      {% render 'pagination', paginate: paginate %}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Blog" }
+{% endschema %}

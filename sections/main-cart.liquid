@@ -1,0 +1,63 @@
+<section class="section page-top">
+  <div class="container container--narrow">
+    <header class="section__head"><h1 class="page-title">Votre panier</h1></header>
+
+    {%- if cart.item_count > 0 -%}
+      <form action="{{ routes.cart_url }}" method="post" class="cart-page" novalidate>
+        <div class="cart-page__items">
+          {%- for item in cart.items -%}
+            <div class="cart-line">
+              <a class="cart-line__media" href="{{ item.url }}">
+                {%- if item.image -%}
+                  {{ item.image | image_url: width: 200 | image_tag: loading: 'lazy', alt: item.title }}
+                {%- else -%}
+                  {% render 'product-art', product: item.product %}
+                {%- endif -%}
+              </a>
+              <div class="cart-line__info">
+                <a href="{{ item.url }}" class="cart-line__title">{{ item.product.title | escape }}</a>
+                {%- unless item.product.has_only_default_variant -%}<span class="cart-line__variant">{{ item.variant.title | escape }}</span>{%- endunless -%}
+                {%- for discount in item.line_level_discount_allocations -%}
+                  <span class="cart-line__discount">{{ discount.discount_application.title | escape }} (−{{ discount.amount | money }})</span>
+                {%- endfor -%}
+                <label class="qty qty--small">
+                  <span class="visually-hidden">Quantité</span>
+                  <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" inputmode="numeric">
+                </label>
+                <a class="cart-line__remove" href="{{ item.url_to_remove }}">Supprimer</a>
+              </div>
+              <div class="cart-line__price">
+                {%- if item.original_line_price != item.final_line_price -%}<s>{{ item.original_line_price | money }}</s>{%- endif -%}
+                {{ item.final_line_price | money }}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="cart-page__summary">
+          {%- for discount in cart.cart_level_discount_applications -%}
+            <p class="cart-page__line"><span>{{ discount.title | escape }}</span><span>−{{ discount.total_allocated_amount | money }}</span></p>
+          {%- endfor -%}
+          <p class="cart-page__total"><span>Total</span><strong>{{ cart.total_price | money }}</strong></p>
+          <p class="cart-page__note">TVA incluse. Livraison calculée à l'étape de paiement.</p>
+          <div class="cart-page__actions">
+            <button type="submit" name="update" class="btn btn--ghost">Mettre à jour</button>
+            <button type="submit" name="checkout" class="btn btn--gold">Passer commande</button>
+          </div>
+          {%- if additional_checkout_buttons -%}
+            <div class="cart-page__dynamic">{{ content_for_additional_checkout_buttons }}</div>
+          {%- endif -%}
+        </div>
+      </form>
+    {%- else -%}
+      <div class="empty">
+        <p>Votre panier est vide.</p>
+        <a class="btn btn--gold" href="{{ routes.all_products_collection_url }}">Découvrir la boutique</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Panier" }
+{% endschema %}

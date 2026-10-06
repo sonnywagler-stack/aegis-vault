@@ -1,0 +1,32 @@
+{%- if section.blocks.size > 0 -%}
+<div class="strip" aria-hidden="true">
+  <div class="strip__track">
+    {%- for i in (1..2) -%}
+      {%- for block in section.blocks -%}
+        <span>{{ block.settings.text }}</span><span>◆</span>
+      {%- endfor -%}
+    {%- endfor -%}
+  </div>
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Bandeau défilant",
+  "blocks": [
+    { "type": "item", "name": "Texte", "settings": [ { "type": "text", "id": "text", "label": "Texte", "default": "Couvercle aimanté" } ] }
+  ],
+  "presets": [
+    {
+      "name": "Bandeau défilant",
+      "blocks": [
+        { "type": "item", "settings": { "text": "Compartiments 195 × 171 mm" } },
+        { "type": "item", "settings": { "text": "Couvercle aimanté" } },
+        { "type": "item", "settings": { "text": "Roulettes avec frein" } },
+        { "type": "item", "settings": { "text": "Modules assemblables en mur" } },
+        { "type": "item", "settings": { "text": "Acrylique coulé 8 mm" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

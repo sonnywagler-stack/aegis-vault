@@ -1,0 +1,20 @@
+<section class="section page-top">
+  <div class="container">
+    <header class="section__head"><h1 class="page-title">Collections</h1></header>
+    <div class="collection-list">
+      {%- for collection in collections -%}
+        <a class="collection-card" href="{{ collection.url }}">
+          {%- if collection.featured_image -%}
+            {{ collection.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: collection.title }}
+          {%- endif -%}
+          <span>{{ collection.title | escape }}</span>
+          <small>{{ collection.products_count }} produit{% if collection.products_count > 1 %}s{% endif %}</small>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Liste des collections" }
+{% endschema %}

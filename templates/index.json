@@ -1,0 +1,394 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "button_link": "/products/vault-3-3-etb",
+        "button2_link": "#vault"
+      },
+      "blocks": {
+        "badge_1": {
+          "type": "badge",
+          "settings": {
+            "value": "9",
+            "label": "ETB par module"
+          }
+        },
+        "badge_2": {
+          "type": "badge",
+          "settings": {
+            "value": "8 mm",
+            "label": "PMMA coulé"
+          }
+        },
+        "badge_3": {
+          "type": "badge",
+          "settings": {
+            "value": "18",
+            "label": "aimants néodyme"
+          }
+        }
+      },
+      "block_order": [
+        "badge_1",
+        "badge_2",
+        "badge_3"
+      ]
+    },
+    "marquee": {
+      "type": "marquee",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "text": "Compartiments 195 × 171 mm"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "text": "Couvercle aimanté"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "text": "Roulettes avec frein"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "text": "Modules assemblables en mur"
+          }
+        },
+        "item_5": {
+          "type": "item",
+          "settings": {
+            "text": "Acrylique coulé 8 mm"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4",
+        "item_5"
+      ]
+    },
+    "features": {
+      "type": "features",
+      "settings": {},
+      "blocks": {
+        "feature_1": {
+          "type": "feature",
+          "settings": {
+            "icon": "grid",
+            "title": "9 compartiments pleins",
+            "text": "Des cloisons de 8 mm sans encoche séparent chaque coffret. Rien ne frotte, rien ne glisse."
+          }
+        },
+        "feature_2": {
+          "type": "feature",
+          "settings": {
+            "icon": "magnet",
+            "title": "Couvercle aimanté",
+            "text": "Deux cadres identiques portent 6 paires d'aimants N52. Le couvercle se plaque seul, dans les deux sens."
+          }
+        },
+        "feature_3": {
+          "type": "feature",
+          "settings": {
+            "icon": "wheels",
+            "title": "Sur roulettes",
+            "text": "Fond double de 16 mm, 4 roulettes vissées en M6 et freins pour bloquer le module en place."
+          }
+        },
+        "feature_4": {
+          "type": "feature",
+          "settings": {
+            "icon": "link",
+            "title": "Assemblable en mur",
+            "text": "Six pastilles aimantées sur les côtés accrochent un module à son voisin, dans les 4 directions."
+          }
+        },
+        "feature_5": {
+          "type": "feature",
+          "settings": {
+            "icon": "shield",
+            "title": "Acrylique coulé",
+            "text": "Du PMMA coulé transparent de 8 mm, plus rigide et plus clair qu'un plastique injecté."
+          }
+        },
+        "feature_6": {
+          "type": "feature",
+          "settings": {
+            "icon": "clock",
+            "title": "Polarité contrôlée",
+            "text": "Chaque aimant est orienté au montage : deux modules s'attirent toujours, ils ne peuvent pas se repousser."
+          }
+        }
+      },
+      "block_order": [
+        "feature_1",
+        "feature_2",
+        "feature_3",
+        "feature_4",
+        "feature_5",
+        "feature_6"
+      ]
+    },
+    "specs": {
+      "type": "specs",
+      "settings": {},
+      "blocks": {
+        "spec_1": {
+          "type": "spec",
+          "settings": {
+            "label": "Encombrement",
+            "value": "617 × 545 mm"
+          }
+        },
+        "spec_2": {
+          "type": "spec",
+          "settings": {
+            "label": "Hauteur du caisson",
+            "value": "118 mm",
+            "note": "fond 16 + paroi 88 + cadres 3 + 3 + couvercle 8"
+          }
+        },
+        "spec_3": {
+          "type": "spec",
+          "settings": {
+            "label": "Compartiment",
+            "value": "195 × 171 × 94 mm"
+          }
+        },
+        "spec_4": {
+          "type": "spec",
+          "settings": {
+            "label": "ETB compatible",
+            "value": "192 × 168 × 92 mm"
+          }
+        },
+        "spec_5": {
+          "type": "spec",
+          "settings": {
+            "label": "Matière",
+            "value": "PMMA coulé transparent 8 mm, cadres 3 mm"
+          }
+        },
+        "spec_6": {
+          "type": "spec",
+          "settings": {
+            "label": "Aimants",
+            "value": "18 néodyme N52 Ø5 × 3 mm"
+          }
+        },
+        "spec_7": {
+          "type": "spec",
+          "settings": {
+            "label": "Roulettes",
+            "value": "4, platine 40 × 40, 25 kg chacune, 2 avec frein"
+          }
+        },
+        "spec_8": {
+          "type": "spec",
+          "settings": {
+            "label": "Poids",
+            "value": "≈ 14 kg à vide, ≈ 20 kg avec 9 ETB"
+          }
+        },
+        "spec_9": {
+          "type": "spec",
+          "settings": {
+            "label": "Écart entre modules",
+            "value": "6 mm (pastilles 3 + 3)"
+          }
+        }
+      },
+      "block_order": [
+        "spec_1",
+        "spec_2",
+        "spec_3",
+        "spec_4",
+        "spec_5",
+        "spec_6",
+        "spec_7",
+        "spec_8",
+        "spec_9"
+      ]
+    },
+    "wall": {
+      "type": "wall-configurator",
+      "settings": {
+        "product": "vault-3-3-etb"
+      }
+    },
+    "products": {
+      "type": "featured-products",
+      "settings": {
+        "products": [
+          "vault-3-3-etb",
+          "vitrine-etb-solo",
+          "kit-24-aimants-n52",
+          "lot-de-4-roulettes"
+        ]
+      }
+    },
+    "steps": {
+      "type": "steps",
+      "settings": {},
+      "blocks": {
+        "step_1": {
+          "type": "step",
+          "settings": {
+            "title": "Fond double",
+            "text": "Deux plaques de 8 mm collées, roulettes boulonnées en M6 à 60 mm des bords."
+          }
+        },
+        "step_2": {
+          "type": "step",
+          "settings": {
+            "title": "Parois",
+            "text": "Quatre parois soudées à la colle PMMA, diagonales contrôlées à 1 mm près."
+          }
+        },
+        "step_3": {
+          "type": "step",
+          "settings": {
+            "title": "Cloisons",
+            "text": "Posées au gabarit 195 × 171 pour 9 compartiments identiques."
+          }
+        },
+        "step_4": {
+          "type": "step",
+          "settings": {
+            "title": "Cadres aimantés",
+            "text": "Aimants marqués, orientés et collés à fleur, sur les parois puis sous le couvercle."
+          }
+        },
+        "step_5": {
+          "type": "step",
+          "settings": {
+            "title": "Pastilles",
+            "text": "Six pastilles de liaison à mi-hauteur, testées une par une au témoin."
+          }
+        }
+      },
+      "block_order": [
+        "step_1",
+        "step_2",
+        "step_3",
+        "step_4",
+        "step_5"
+      ]
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {},
+      "blocks": {
+        "question_1": {
+          "type": "question",
+          "settings": {
+            "question": "Quelles ETB rentrent dans le Vault 3×3 ?",
+            "answer": "<p>Les compartiments sont dimensionnés pour le format standard d'ETB de 192 × 168 × 92 mm, avec 1,5 mm de jeu. Si votre coffret a un format spécial, mesurez-le ou écrivez-nous avant de commander.</p>"
+          }
+        },
+        "question_2": {
+          "type": "question",
+          "settings": {
+            "question": "Comment sortir une ETB d'un compartiment ?",
+            "answer": "<p>Les cloisons dépassent d'environ 2 mm au-dessus de l'ETB : on la saisit par le dessus avec les doigts. Pour plus de confort, glissez un ruban sous le coffret.</p>"
+          }
+        },
+        "question_3": {
+          "type": "question",
+          "settings": {
+            "question": "Les modules peuvent-ils se repousser ?",
+            "answer": "<p>Non. Les pastilles avant et gauche ont une polarité, les pastilles arrière et droite la polarité opposée. Un côté rencontre toujours son complément, quel que soit l'assemblage.</p>"
+          }
+        },
+        "question_4": {
+          "type": "question",
+          "settings": {
+            "question": "Les aimants suffisent-ils à tenir un mur ?",
+            "answer": "<p>Ils alignent les modules et les maintiennent côte à côte, mais ne remplacent pas les freins. Bloquez les roulettes une fois le mur en place.</p>"
+          }
+        },
+        "question_5": {
+          "type": "question",
+          "settings": {
+            "question": "Comment entretenir l'acrylique ?",
+            "answer": "<p>Chiffon microfibre et eau savonneuse. Pas d'alcool fort, pas de produit à l'ammoniaque, qui peuvent voiler le plexi.</p>"
+          }
+        },
+        "question_6": {
+          "type": "question",
+          "settings": {
+            "question": "Faites-vous du sur-mesure ?",
+            "answer": "<p>Oui : autres formats de coffrets, grilles 2×2 ou 4×4, acrylique teinté. Décrivez votre projet via le formulaire de contact.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "question_1",
+        "question_2",
+        "question_3",
+        "question_4",
+        "question_5",
+        "question_6"
+      ]
+    },
+    "contact": {
+      "type": "contact",
+      "settings": {},
+      "blocks": {
+        "info_1": {
+          "type": "info",
+          "settings": {
+            "label": "Email",
+            "value": "contact@aegisvault.fr"
+          }
+        },
+        "info_2": {
+          "type": "info",
+          "settings": {
+            "label": "Instagram",
+            "value": "@aegisvault"
+          }
+        },
+        "info_3": {
+          "type": "info",
+          "settings": {
+            "label": "Horaires",
+            "value": "Lun – Ven, 9h – 18h"
+          }
+        }
+      },
+      "block_order": [
+        "info_1",
+        "info_2",
+        "info_3"
+      ]
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "marquee",
+    "features",
+    "specs",
+    "wall",
+    "products",
+    "steps",
+    "faq",
+    "contact",
+    "newsletter"
+  ]
+}

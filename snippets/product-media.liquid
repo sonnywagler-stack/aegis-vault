@@ -1,0 +1,6 @@
+{%- comment -%} Photo principale du produit, ou illustration si aucune photo. Paramètres : product, sizes {%- endcomment -%}
+{%- if product.featured_media -%}
+  {{ product.featured_media | image_url: width: 900 | image_tag: loading: 'lazy', sizes: sizes, widths: '360, 540, 720, 900', class: 'product-photo', alt: product.featured_media.alt | default: product.title }}
+{%- else -%}
+  {% render 'product-art', product: product %}
+{%- endif -%}

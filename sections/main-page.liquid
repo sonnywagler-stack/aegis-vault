@@ -1,0 +1,10 @@
+<section class="section page-top">
+  <div class="container container--narrow">
+    <header class="section__head"><h1 class="page-title">{{ page.title | escape }}</h1></header>
+    <div class="rte">{{ page.content }}</div>
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Page" }
+{% endschema %}

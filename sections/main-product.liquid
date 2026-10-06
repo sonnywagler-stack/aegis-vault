@@ -1,0 +1,120 @@
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+<section class="section product-page">
+  <div class="container product-page__inner">
+    <div class="product-page__media">
+      {%- if product.media.size > 0 -%}
+        <div class="gallery">
+          {%- for media in product.media -%}
+            {%- liquid
+              assign loading = 'lazy'
+              if forloop.first
+                assign loading = 'eager'
+              endif
+            -%}
+            <figure class="gallery__item{% if forloop.first %} is-main{% endif %}">
+              {%- case media.media_type -%}
+                {%- when 'image' -%}
+                  {{ media | image_url: width: 1400 | image_tag: sizes: '(min-width: 960px) 55vw, 100vw', widths: '540, 720, 1000, 1400', loading: loading }}
+                {%- when 'video' -%}
+                  {{ media | video_tag: controls: true, image_size: '1400x' }}
+                {%- when 'external_video' -%}
+                  {{ media | external_video_tag }}
+                {%- else -%}
+                  {{ media | media_tag }}
+              {%- endcase -%}
+            </figure>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="product-page__art">
+          {% render 'product-art', product: product %}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="product-page__info">
+      {%- if section.settings.show_vendor -%}<p class="eyebrow">{{ product.vendor }}</p>{%- endif -%}
+      <h1>{{ product.title | escape }}</h1>
+      <div class="product-page__price" data-product-price>{% render 'price', product: product, variant: current_variant %}</div>
+      <p class="product-page__tax">TVA incluse. Livraison calculée à l'étape de paiement.</p>
+
+      {%- form 'product', product, id: 'ProductForm', class: 'product-form', data-ajax-cart: '' -%}
+        {%- unless product.has_only_default_variant -%}
+          <label class="product-form__field">{{ product.options | join: ' / ' }}
+            <select name="id" data-variant-select>
+              {%- for variant in product.variants -%}
+                <option value="{{ variant.id }}" data-price="{{ variant.price | money | escape }}" data-available="{{ variant.available }}"
+                  {% if variant == current_variant %}selected{% endif %}{% unless variant.available %} disabled{% endunless %}>
+                  {{ variant.title | escape }}{% unless variant.available %} — épuisé{% endunless %}
+                </option>
+              {%- endfor -%}
+            </select>
+          </label>
+        {%- else -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+        {%- endunless -%}
+
+        <div class="product-form__row">
+          <label class="qty">
+            <span class="visually-hidden">Quantité</span>
+            <button type="button" data-qty-step="-1" aria-label="Diminuer la quantité">−</button>
+            <input type="number" name="quantity" value="1" min="1" inputmode="numeric">
+            <button type="button" data-qty-step="1" aria-label="Augmenter la quantité">+</button>
+          </label>
+          <button type="submit" class="btn btn--gold product-form__submit" {% unless current_variant.available %}disabled{% endunless %}>
+            {%- if current_variant.available -%}Ajouter au panier{%- else -%}Épuisé{%- endif -%}
+          </button>
+        </div>
+        {%- if section.settings.show_dynamic_checkout -%}
+          <div class="product-form__dynamic">{{ form | payment_button }}</div>
+        {%- endif -%}
+      {%- endform -%}
+
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'note' -%}
+            <div class="product-note" {{ block.shopify_attributes }}>
+              {% render 'icon', icon: block.settings.icon %}
+              <span>{{ block.settings.text }}</span>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+
+      {%- if product.description != blank -%}
+        <div class="rte product-page__desc">{{ product.description }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script type="application/ld+json">
+  {{ product | structured_data }}
+</script>
+
+{% schema %}
+{
+  "name": "Fiche produit",
+  "settings": [
+    { "type": "checkbox", "id": "show_vendor", "label": "Afficher la marque", "default": true },
+    { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Boutons de paiement express", "default": true, "info": "Apple Pay, Google Pay, Shop Pay… selon vos réglages de paiement." }
+  ],
+  "blocks": [
+    {
+      "type": "note",
+      "name": "Argument",
+      "settings": [
+        {
+          "type": "select", "id": "icon", "label": "Icône", "default": "truck",
+          "options": [
+            { "value": "truck", "label": "Livraison" },
+            { "value": "shield", "label": "Bouclier" },
+            { "value": "clock", "label": "Horloge" },
+            { "value": "magnet", "label": "Aimant" }
+          ]
+        },
+        { "type": "text", "id": "text", "label": "Texte", "default": "Expédié sous 48 h ouvrées" }
+      ]
+    }
+  ]
+}
+{% endschema %}

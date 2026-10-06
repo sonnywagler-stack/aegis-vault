@@ -1,0 +1,31 @@
+<section class="section page-top">
+  <div class="container">
+    <header class="section__head">
+      <p class="eyebrow">Collection</p>
+      <h1 class="page-title">{{ collection.title | escape }}</h1>
+      {%- if collection.description != blank -%}<div class="rte">{{ collection.description }}</div>{%- endif -%}
+    </header>
+
+    {%- paginate collection.products by section.settings.per_page -%}
+      {%- if collection.products.size > 0 -%}
+        <div class="products">
+          {%- for product in collection.products -%}
+            {% render 'product-card', product: product, featured: false %}
+          {%- endfor -%}
+        </div>
+        {% render 'pagination', paginate: paginate %}
+      {%- else -%}
+        <p class="empty">Aucun produit dans cette collection pour le moment.</p>
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection",
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Produits par page", "min": 6, "max": 36, "step": 3, "default": 12 }
+  ]
+}
+{% endschema %}

@@ -1,19 +1,30 @@
-# Aegis Vault
+# Aegis Vault — thème Shopify
 
-Site vitrine et boutique d'Aegis Vault, vitrines acryliques pour collectionneurs d'ETB.
+Thème Shopify (Online Store 2.0) de la boutique Aegis Vault : vitrines acryliques pour ETB.
 
-Site statique, sans build : ouvrez `index.html` dans un navigateur, ou servez le dossier (`npx http-server .`).
+## Structure
 
-- `index.html` — contenu des pages
-- `styles.css` — mise en forme (thème sombre, accent or)
-- `script.js` — dessins du Vault 3×3 générés à l'échelle depuis le plan de découpe, configurateur de mur, panier
+- `layout/` — gabarit général (`theme.liquid`) et page d'attente (`password.liquid`)
+- `sections/` — sections modifiables dans l'éditeur de thème : bannière, points forts, fiche technique, configurateur de mur, produits, étapes, FAQ, contact, newsletter, et pages principales (produit, collection, panier, compte…)
+- `snippets/` — morceaux réutilisés (carte produit, prix, tiroir panier, logo)
+- `templates/` — pages en JSON ; `product.vault.json` est la fiche détaillée du Vault 3×3
+- `assets/aegis.css`, `assets/aegis.js` — styles, illustrations à l'échelle (cotes du plan de découpe), configurateur, panier AJAX
 
-## Shopify
+## Fonctionnement
 
-Le panier du site envoie vers le checkout de la boutique Shopify (`SHOPIFY_STORE` en haut de `script.js`) via un permalien `/cart/<variante>:<quantité>,…`. Paiement, livraison et commandes sont gérés par Shopify.
+- **Prix, stock, panier, paiement** : tout vient de Shopify. Le panier utilise l'API AJAX de Shopify (`/cart/add.js`, `/cart/change.js`).
+- **Remise mur** : remises automatiques Shopify (−5 % dès 2 Vault 3×3, −10 % dès 4). Le configurateur affiche les mêmes paliers ; ils se règlent dans la section « Configurateur de mur » et doivent rester identiques aux remises Shopify.
+- **Illustrations** : un produit sans photo est dessiné automatiquement selon ses tags (`vault`, `aimants`, `roulettes`, sinon vitrine solo). Dès qu'une photo est ajoutée dans Shopify, elle remplace le dessin.
+- **Fiche Vault** : le produit Vault 3×3 utilise le modèle `product.vault` (configurateur, cotes, FAQ sous la fiche).
 
-- Chaque produit de `PRODUCTS` porte l'ID de sa variante Shopify (`variant`). Si un produit est recréé dans Shopify, mettez l'ID à jour.
-- Les prix affichés sur le site doivent rester identiques à ceux de Shopify.
-- La remise mur (−5 % dès 2 Vault 3×3, −10 % dès 4) est une remise automatique Shopify ; `wallDiscount` dans `script.js` ne sert qu'à l'affichage.
+## Développement
 
-Le formulaire de contact ouvre un email prérempli vers contact@aegisvault.fr.
+Avec [Shopify CLI](https://shopify.dev/docs/storefronts/themes/tools/cli) :
+
+```sh
+shopify theme dev --store a0di9y-dh      # aperçu local
+shopify theme check                     # vérification
+shopify theme push --unpublished        # envoi vers la boutique
+```
+
+On peut aussi relier ce dépôt GitHub à la boutique (Boutique en ligne › Thèmes › Ajouter un thème › Se connecter depuis GitHub) pour synchroniser automatiquement la branche.

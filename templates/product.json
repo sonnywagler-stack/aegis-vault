@@ -1,0 +1,48 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {},
+      "blocks": {
+        "note_1": {
+          "type": "note",
+          "settings": {
+            "icon": "truck",
+            "text": "Expédié sous 48 h ouvrées"
+          }
+        },
+        "note_2": {
+          "type": "note",
+          "settings": {
+            "icon": "shield",
+            "text": "Paiement sécurisé"
+          }
+        }
+      },
+      "block_order": [
+        "note_1",
+        "note_2"
+      ]
+    },
+    "related": {
+      "type": "featured-products",
+      "settings": {
+        "products": [
+          "vault-3-3-etb",
+          "vitrine-etb-solo",
+          "kit-24-aimants-n52",
+          "lot-de-4-roulettes"
+        ],
+        "heading": "Vous aimerez aussi",
+        "eyebrow": "Boutique",
+        "anchor": "boutique",
+        "feature_first": false,
+        "limit": 4
+      }
+    }
+  },
+  "order": [
+    "main",
+    "related"
+  ]
+}

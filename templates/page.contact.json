@@ -1,0 +1,44 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "contact": {
+      "type": "contact",
+      "settings": {},
+      "blocks": {
+        "info_1": {
+          "type": "info",
+          "settings": {
+            "label": "Email",
+            "value": "contact@aegisvault.fr"
+          }
+        },
+        "info_2": {
+          "type": "info",
+          "settings": {
+            "label": "Instagram",
+            "value": "@aegisvault"
+          }
+        },
+        "info_3": {
+          "type": "info",
+          "settings": {
+            "label": "Horaires",
+            "value": "Lun – Ven, 9h – 18h"
+          }
+        }
+      },
+      "block_order": [
+        "info_1",
+        "info_2",
+        "info_3"
+      ]
+    }
+  },
+  "order": [
+    "main",
+    "contact"
+  ]
+}

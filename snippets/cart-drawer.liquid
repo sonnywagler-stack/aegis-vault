@@ -1,0 +1,14 @@
+<div class="overlay" id="overlay" hidden></div>
+<aside class="cart" id="cart" aria-label="Panier" aria-hidden="true">
+  <div class="cart__head">
+    <h2>Votre panier</h2>
+    <button class="cart__close" id="cartClose" aria-label="Fermer le panier">×</button>
+  </div>
+  <div class="cart__items" id="cartItems"></div>
+  <div class="cart__foot">
+    <p class="cart__shipping">Livraison calculée à l'étape suivante. Paiement sécurisé par Shopify.</p>
+    <div class="cart__total"><span>Total</span><strong id="cartTotal">{{ cart.total_price | money }}</strong></div>
+    <a class="btn btn--gold btn--block" id="checkout" href="{{ routes.root_url }}checkout">Passer commande</a>
+    <a class="cart__view" href="{{ routes.cart_url }}">Voir le panier</a>
+  </div>
+</aside>

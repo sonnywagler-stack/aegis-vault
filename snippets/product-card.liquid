@@ -1,0 +1,32 @@
+{%- comment -%} Carte produit. Paramètres : product, featured (booléen) {%- endcomment -%}
+<article class="product{% if featured %} product--featured{% endif %} reveal">
+  <a class="product__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+    {%- if product.compare_at_price > product.price -%}
+      <span class="product__tag">Promo</span>
+    {%- elsif product.tags contains 'best-seller' -%}
+      <span class="product__tag">Best-seller</span>
+    {%- elsif product.tags contains 'nouveau' -%}
+      <span class="product__tag">Nouveau</span>
+    {%- endif -%}
+    {% render 'product-media', product: product, sizes: '(min-width: 960px) 600px, 100vw' %}
+  </a>
+  <div class="product__body">
+    <h3><a href="{{ product.url }}">{{ product.title | escape }}</a></h3>
+    {%- assign excerpt = product.description | strip_html | truncatewords: 28 -%}
+    {%- if excerpt != blank -%}<p class="product__desc">{{ excerpt }}</p>{%- endif -%}
+    <div class="product__foot">
+      {% render 'price', product: product %}
+      {%- if product.available and product.has_only_default_variant -%}
+        <form method="post" action="{{ routes.cart_add_url }}" data-ajax-cart>
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          <input type="hidden" name="quantity" value="1">
+          <button type="submit" class="btn btn--gold product__add">Ajouter</button>
+        </form>
+      {%- elsif product.available -%}
+        <a class="btn btn--gold product__add" href="{{ product.url }}">Choisir</a>
+      {%- else -%}
+        <span class="product__soldout">Épuisé</span>
+      {%- endif -%}
+    </div>
+  </div>
+</article>

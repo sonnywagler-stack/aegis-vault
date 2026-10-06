@@ -1,0 +1,12 @@
+{%- comment -%} Logo : image définie dans les réglages du thème, sinon écusson + nom en texte. {%- endcomment -%}
+<a href="{{ routes.root_url }}" class="logo" aria-label="{{ shop.name }}, accueil">
+  {%- if settings.logo -%}
+    {{ settings.logo | image_url: width: 360 | image_tag: class: 'logo__image', style: 'max-width: 180px; height: auto;', alt: shop.name }}
+  {%- else -%}
+    <svg class="logo__mark" viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M32 4 8 13v17c0 15 10 26 24 30 14-4 24-15 24-30V13Z"/>
+      <path d="M32 16 20 21v9c0 8 5 14 12 16 7-2 12-8 12-16v-9Z" class="logo__inner"/>
+    </svg>
+    <span class="logo__text">AEGIS <strong>VAULT</strong></span>
+  {%- endif -%}
+</a>

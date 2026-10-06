@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_background }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <title>
+    {{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+  </title>
+  {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+  {% if settings.favicon %}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
+  {% else %}
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 8 13v17c0 15 10 26 24 30 14-4 24-15 24-30V13Z' fill='%230b0f14' stroke='%23d4a843' stroke-width='4'/%3E%3C/svg%3E">
+  {% endif %}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  {% render 'meta-tags' %}
+
+  <style>
+    :root {
+      --bg: {{ settings.color_background }};
+      --gold: {{ settings.color_accent }};
+      --gold-2: {{ settings.color_accent_light }};
+    }
+  </style>
+  {{ 'aegis.css' | asset_url | stylesheet_tag }}
+
+  <script>
+    window.AegisVault = {
+      routes: {
+        root: {{ routes.root_url | json }},
+        cart: {{ routes.cart_url | json }},
+        cartAdd: {{ routes.cart_add_url | json }},
+        cartChange: {{ routes.cart_change_url | json }}
+      },
+      currency: {{ cart.currency.iso_code | json }},
+      locale: {{ request.locale.iso_code | json }}
+    };
+  </script>
+  <script src="{{ 'aegis.js' | asset_url }}" defer></script>
+
+  {{ content_for_header }}
+</head>
+
+<body class="template-{{ template.name }}">
+  <a class="skip-link" href="#MainContent">Aller au contenu</a>
+
+  {% sections 'header-group' %}
+
+  <main id="MainContent" role="main" tabindex="-1">
+    {{ content_for_layout }}
+  </main>
+
+  {% sections 'footer-group' %}
+
+  {% render 'cart-drawer' %}
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

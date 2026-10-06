@@ -1,0 +1,50 @@
+<header class="header" id="top">
+  <div class="container header__inner">
+    {% render 'logo' %}
+
+    <nav class="nav" id="nav" aria-label="Navigation principale">
+      {%- assign menu = linklists[section.settings.menu] -%}
+      {%- if menu.links.size > 0 -%}
+        {%- for link in menu.links -%}
+          <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+        {%- endfor -%}
+      {%- else -%}
+        <a href="{{ routes.root_url }}#vault">Le Vault 3×3</a>
+        <a href="{{ routes.root_url }}#mur">Configurer un mur</a>
+        <a href="{{ routes.all_products_collection_url }}">Boutique</a>
+        <a href="{{ routes.root_url }}#faq">FAQ</a>
+        <a href="{{ routes.root_url }}#contact">Contact</a>
+      {%- endif -%}
+    </nav>
+
+    <div class="header__actions">
+      {%- if shop.customer_accounts_enabled -%}
+        <a class="icon-btn" href="{{ routes.account_url }}" aria-label="Mon compte">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        </a>
+      {%- endif -%}
+      <a class="icon-btn cart-btn" href="{{ routes.cart_url }}" id="cartOpen" aria-label="Ouvrir le panier">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h15l-1.5 9h-12zM6 6 5 3H2"/><circle cx="9" cy="19.5" r="1"/><circle cx="18" cy="19.5" r="1"/></svg>
+        <span class="cart-btn__count" id="cartCount">{{ cart.item_count }}</span>
+      </a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "En-tête",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "info": "Laissez vide pour afficher le menu par défaut (Le Vault, Configurer, Boutique, FAQ, Contact)."
+    }
+  ]
+}
+{% endschema %}

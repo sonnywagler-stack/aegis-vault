@@ -1,4 +1,4 @@
-/* Aegis Vault — drawings, configurator, cart.
+/* Aegis Vault theme — drawings, wall configurator, AJAX cart.
    All Vault 3×3 dimensions come from the cut plan (mm). */
 (() => {
   'use strict';
@@ -22,45 +22,6 @@
   const TOP_WALL = V.base + V.wall;            // 104
   const TOP_CELL = V.base + V.cell.z;          // 110 : le couvercle repose sur les cloisons
 
-  /* ---------- Catalogue ----------
-     Prix et IDs de variantes : doivent correspondre aux produits de la boutique Shopify. */
-  const SHOPIFY_STORE = 'https://a0di9y-dh.myshopify.com';
-  const VAULT_PRICE = 349;
-  const PRODUCTS = [
-    {
-      id: 'vault33', variant: '64802603172217', name: 'Vault 3×3 · ETB', price: VAULT_PRICE, tag: 'Best-seller', featured: true,
-      desc: 'Le module complet : 9 compartiments pour ETB, couvercle aimanté, 4 roulettes dont 2 à frein, 6 pastilles de liaison pour former un mur.',
-      specs: ['617 × 545 mm', '9 ETB', 'PMMA coulé 8 mm', '18 aimants N52', '≈ 14 kg'],
-      art: () => isoVault({ lift: 90, scale: 0.38, w: 520, h: 360 }),
-    },
-    {
-      id: 'etb-solo', variant: '64802603499897', name: 'Vitrine ETB solo', price: 39.9, tag: 'Nouveau',
-      desc: 'Un boîtier acrylique pour une seule ETB, à poser sur une étagère. Couvercle aimanté.',
-      specs: ['Pour ETB 192 × 168 × 92', 'Couvercle aimanté'],
-      art: () => isoSolo(),
-    },
-    {
-      id: 'aimants', variant: '64802603729273', name: "Kit 24 aimants N52", price: 9.9,
-      desc: 'Aimants néodyme Ø5 × 3 mm de rechange, identiques à ceux du Vault. Pour remplacer un aimant perdu ou ajouter une pastille.',
-      specs: ['Ø5 × 3 mm', 'N52', '24 pièces'],
-      art: () => artMagnets(),
-    },
-    {
-      id: 'roulettes', variant: '64802603794809', name: 'Lot de 4 roulettes', price: 29.9,
-      desc: 'Roulettes à platine, 2 avec frein, boulonnerie M6 fournie. Compatibles avec tous les Vault.',
-      specs: ['Platine 40 × 40', '25 kg / roulette', 'H 80 mm'],
-      art: () => artWheels(),
-    },
-  ];
-  const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
-
-  // Remise mur selon le nombre de Vault 3×3 — miroir des remises automatiques Shopify
-  const wallDiscount = n => (n >= 4 ? 0.10 : n >= 2 ? 0.05 : 0);
-
-  const fmt = n => n.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
-  const fmtInt = n => n.toLocaleString('fr-FR');
-  const $ = (s, el = document) => el.querySelector(s);
-  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
   /* ---------- Isometric drawing helpers ---------- */
   const C30 = Math.cos(Math.PI / 6), S30 = 0.5;
@@ -215,42 +176,60 @@
     svg.innerHTML = g;
   }
 
-  /* ---------- Hero ---------- */
-  function initHero() {
-    const svg = $('#vaultIso');
-    if (!svg) return;
-    const scale = 0.44, lift = 150, w = 520, h = 440;
-    const ox = w / 2 + (V.D - V.W) * C30 * scale / 2;
-    const oy = centerY(scale, lift, h);
-    const P = projector(scale, ox, oy);
-    svg.innerHTML = vaultParts(P) + `<g class="lid">${lidParts(P, lift)}</g>`;
-    svg.style.setProperty('--lid-drop', `${lift * scale}px`);
 
-    $$('.iso__toggle .chip').forEach(btn => btn.addEventListener('click', () => {
-      $$('.iso__toggle .chip').forEach(b => b.classList.toggle('is-active', b === btn));
-      svg.classList.toggle('is-closed', btn.dataset.lid === 'closed');
-    }));
+  /* ---------- Utilitaires ---------- */
+  const AV = window.AegisVault || { routes: { root: '/', cart: '/cart', cartAdd: '/cart/add', cartChange: '/cart/change' }, currency: 'EUR', locale: 'fr' };
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const fmtInt = n => n.toLocaleString('fr-FR');
+  // Montants Shopify en centimes
+  const money = cents => (cents / 100).toLocaleString('fr-FR', { style: 'currency', currency: AV.currency || 'EUR' });
+  const esc = str => String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  /* ---------- Illustrations ---------- */
+  const ART = {
+    vault: () => isoVault({ lift: 90, scale: 0.38, w: 520, h: 360 }),
+    solo: () => isoSolo(),
+    magnets: () => artMagnets(),
+    wheels: () => artWheels(),
+  };
+  function initArt(scope = document) {
+    $$('[data-art]', scope).forEach(el => { if (!el.firstChild) el.innerHTML = (ART[el.dataset.art] || ART.solo)(); });
+    $$('[data-vault-plan]', scope).forEach(drawPlan);
+  }
+
+  function initHero(scope = document) {
+    $$('[data-vault-iso]', scope).forEach(svg => {
+      const scale = 0.44, lift = 150, w = 520, h = 440;
+      const ox = w / 2 + (V.D - V.W) * C30 * scale / 2;
+      const P = projector(scale, ox, centerY(scale, lift, h));
+      svg.innerHTML = vaultParts(P) + `<g class="lid">${lidParts(P, lift)}</g>`;
+      svg.style.setProperty('--lid-drop', `${lift * scale}px`);
+      const chips = $$('[data-lid]', svg.parentElement);
+      chips.forEach(btn => btn.addEventListener('click', () => {
+        chips.forEach(b => b.classList.toggle('is-active', b === btn));
+        svg.classList.toggle('is-closed', btn.dataset.lid === 'closed');
+      }));
+    });
   }
 
   /* ---------- Configurateur de mur ---------- */
-  const cfg = { cols: 2, rows: 1, max: { cols: 5, rows: 3 } };
-
   function wallDims(cols, rows) {
     return { w: cols * V.W + (cols - 1) * V.gap, d: rows * V.D + (rows - 1) * V.gap };
   }
 
-  function drawWall(svg) {
-    const { cols, rows } = cfg, { w, d } = wallDims(cols, rows), pad = 60;
+  function drawWall(svg, cols, rows) {
+    const { w, d } = wallDims(cols, rows), pad = 60;
     svg.setAttribute('viewBox', `${-pad} ${-pad} ${w + 2 * pad} ${d + 2 * pad}`);
     let g = '';
     for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
       const x0 = c * (V.W + V.gap), y0 = r * (V.D + V.gap);
       g += `<rect class="dw-acr" x="${x0}" y="${y0}" width="${V.W}" height="${V.D}" rx="4" stroke-width="4"/>`;
       for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
-        g += `<rect class="dw-etb-top" x="${x0 + V.t + 1.5 + i * (V.cell.x + V.t)}" y="${y0 + V.t + 1.5 + j * (V.cell.y + V.t)}" width="${V.etb.x}" height="${V.etb.y}" rx="3"/>`;
-        g += `<rect class="dw-etb-band" x="${x0 + V.t + 1.5 + i * (V.cell.x + V.t)}" y="${y0 + V.t + 1.5 + j * (V.cell.y + V.t)}" width="${V.etb.x * 0.22}" height="${V.etb.y}" rx="3"/>`;
+        const ex = x0 + V.t + 1.5 + i * (V.cell.x + V.t), ey = y0 + V.t + 1.5 + j * (V.cell.y + V.t);
+        g += `<rect class="dw-etb-top" x="${ex}" y="${ey}" width="${V.etb.x}" height="${V.etb.y}" rx="3"/>`;
+        g += `<rect class="dw-etb-band" x="${ex}" y="${ey}" width="${V.etb.x * 0.22}" height="${V.etb.y}" rx="3"/>`;
       }
-      // Pastilles
       V.magX.forEach(x => { g += `<rect class="dw-mag" x="${x0 + x - 8}" y="${y0 - 3}" width="16" height="3"/><rect class="dw-mag" x="${x0 + x - 8}" y="${y0 + V.D}" width="16" height="3"/>`; });
       V.magY.forEach(y => { g += `<rect class="dw-mag" x="${x0 - 3}" y="${y0 + y - 8}" width="3" height="16"/><rect class="dw-mag" x="${x0 + V.W}" y="${y0 + y - 8}" width="3" height="16"/>`; });
     }
@@ -260,175 +239,182 @@
     svg.innerHTML = g;
   }
 
-  function updateConfig() {
-    const { cols, rows } = cfg, n = cols * rows, { w, d } = wallDims(cols, rows);
-    const disc = wallDiscount(n), total = n * VAULT_PRICE * (1 - disc);
-    $('#colsOut').textContent = cols;
-    $('#rowsOut').textContent = rows;
-    $('#statModules').textContent = n;
-    $('#statEtb').textContent = n * 9;
-    $('#statSize').textContent = `${fmtInt(w)} × ${fmtInt(d)} mm`;
-    $('#statWeight').textContent = `≈ ${Math.round(n * (V.emptyKg + 9 * V.etbKg))} kg`;
-    $('#statPrice').textContent = fmt(total);
-    $('#statSaving').textContent = disc ? `Remise mur −${disc * 100} % (−${fmt(n * VAULT_PRICE * disc)})` : 'Remise −5 % dès 2 modules';
-    $$('[data-step]').forEach(b => {
-      const k = b.dataset.step, v = cfg[k] + Number(b.dataset.d);
-      b.disabled = v < 1 || v > cfg.max[k];
-    });
-    drawWall($('#wallPlan'));
-  }
+  function initConfig(root) {
+    const cfg = { cols: 2, rows: 1, max: { cols: +root.dataset.maxCols || 5, rows: +root.dataset.maxRows || 3 } };
+    const price = Number(root.dataset.price || 0);
+    // Paliers [quantité, %], du plus grand au plus petit
+    let tiers = [];
+    try { tiers = JSON.parse(root.dataset.tiers || '[]').filter(([q, p]) => q > 0 && p > 0).sort((a, b) => b[0] - a[0]); } catch { /* paliers invalides */ }
+    const discountFor = n => { const t = tiers.find(([q]) => n >= q); return t ? t[1] / 100 : 0; };
+    const stat = k => $(`[data-stat="${k}"]`, root);
 
-  function initConfig() {
-    if (!$('#wallPlan')) return;
-    $$('[data-step]').forEach(b => b.addEventListener('click', () => {
+    const update = () => {
+      const { cols, rows } = cfg, n = cols * rows, { w, d } = wallDims(cols, rows);
+      $('[data-out="cols"]', root).textContent = cols;
+      $('[data-out="rows"]', root).textContent = rows;
+      stat('modules').textContent = n;
+      stat('etb').textContent = n * 9;
+      stat('size').textContent = `${fmtInt(w)} × ${fmtInt(d)} mm`;
+      stat('weight').textContent = `≈ ${Math.round(n * (V.emptyKg + 9 * V.etbKg))} kg`;
+      if (price && stat('price')) {
+        const disc = discountFor(n);
+        stat('price').textContent = money(Math.round(n * price * (1 - disc)));
+        const next = tiers.slice().reverse().find(([q]) => q > n);
+        stat('saving').textContent = disc
+          ? `Remise mur −${Math.round(disc * 100)} % (−${money(Math.round(n * price * disc))})`
+          : next ? `Remise −${next[1]} % dès ${next[0]} modules` : '';
+      }
+      $$('[data-step]', root).forEach(b => {
+        const k = b.dataset.step, v = cfg[k] + Number(b.dataset.d);
+        b.disabled = v < 1 || v > cfg.max[k];
+      });
+      drawWall($('[data-wall-plan]', root), cols, rows);
+    };
+
+    $$('[data-step]', root).forEach(b => b.addEventListener('click', () => {
       const k = b.dataset.step;
       cfg[k] = Math.min(cfg.max[k], Math.max(1, cfg[k] + Number(b.dataset.d)));
-      updateConfig();
+      update();
     }));
-    $('#configAdd').addEventListener('click', () => {
+
+    const add = $('[data-config-add]', root);
+    add?.addEventListener('click', async () => {
       const n = cfg.cols * cfg.rows;
-      addToCart('vault33', n);
-      toast(`${n} Vault 3×3 ajouté${n > 1 ? 's' : ''} au panier`);
+      add.disabled = true;
+      try {
+        await cartAdd([{ id: Number(root.dataset.variant), quantity: n }]);
+        toast(`${n} Vault 3×3 ajouté${n > 1 ? 's' : ''} au panier`);
+        openCart();
+      } catch (e) {
+        toast(e.message);
+      } finally {
+        add.disabled = false;
+      }
     });
-    updateConfig();
+    update();
   }
 
-  /* ---------- Boutique ---------- */
-  function renderProducts() {
-    const grid = $('#products');
-    if (!grid) return;
-    grid.innerHTML = PRODUCTS.map(p => `
-      <article class="product${p.featured ? ' product--featured' : ''} reveal">
-        <div class="product__media">
-          ${p.tag ? `<span class="product__tag">${p.tag}</span>` : ''}
-          ${p.art()}
-        </div>
-        <div class="product__body">
-          <h3>${p.name}</h3>
-          <p class="product__desc">${p.desc}</p>
-          <ul class="product__specs">${p.specs.map(s => `<li>${s}</li>`).join('')}</ul>
-          <div class="product__foot">
-            <span class="product__price">${fmt(p.price)}</span>
-            <button class="btn btn--gold product__add" data-add="${p.id}">Ajouter</button>
-          </div>
-        </div>
-      </article>`).join('');
-    grid.addEventListener('click', e => {
-      const btn = e.target.closest('[data-add]');
-      if (!btn) return;
-      addToCart(btn.dataset.add, 1);
-      toast(`${byId[btn.dataset.add].name} ajouté au panier`);
+  /* ---------- Panier (API AJAX Shopify) ---------- */
+  async function cartRequest(url, body) {
+    const res = await fetch(url, {
+      method: body ? 'POST' : 'GET',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
     });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.description || data.message || 'Impossible de mettre à jour le panier.');
+    return data;
   }
+  const cartGet = () => cartRequest(`${AV.routes.cart}.js`);
+  const cartAdd = items => cartRequest(`${AV.routes.cartAdd}.js`, { items }).then(refreshCart);
+  const cartChange = (key, quantity) => cartRequest(`${AV.routes.cartChange}.js`, { id: key, quantity }).then(renderCart);
 
-  /* ---------- Panier ---------- */
-  const STORE_KEY = 'aegis-vault-cart';
-  let cart = load();
-
-  function load() {
-    try {
-      const raw = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
-      return Object.fromEntries(Object.entries(raw).filter(([id, q]) => byId[id] && q > 0));
-    } catch { return {}; }
-  }
-  function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(cart)); } catch { /* stockage indisponible */ } }
-
-  function addToCart(id, qty) {
-    cart[id] = (cart[id] || 0) + qty;
-    save(); renderCart();
-    const c = $('#cartCount');
-    c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump');
-  }
-
-  function totals() {
-    const sub = Object.entries(cart).reduce((s, [id, q]) => s + byId[id].price * q, 0);
-    const nVault = cart.vault33 || 0;
-    const disc = nVault * VAULT_PRICE * wallDiscount(nVault);
-    return { sub, disc, total: sub - disc, count: Object.values(cart).reduce((a, b) => a + b, 0) };
-  }
-
-  function renderCart() {
-    const list = $('#cartItems'), t = totals();
-    $('#cartCount').textContent = t.count;
-    const ids = Object.keys(cart);
-    list.innerHTML = ids.length ? ids.map(id => `
+  function renderCart(cart) {
+    const count = $('#cartCount');
+    if (count) {
+      count.textContent = cart.item_count;
+      count.classList.remove('bump'); void count.offsetWidth; count.classList.add('bump');
+    }
+    const list = $('#cartItems');
+    if (!list) return cart;
+    list.innerHTML = cart.items.length ? cart.items.map(item => `
       <div class="cart-item">
-        <span class="cart-item__name">${byId[id].name}</span>
-        <span class="cart-item__price">${fmt(byId[id].price * cart[id])}</span>
+        <span class="cart-item__name">${esc(item.product_title)}${item.variant_title && !item.product_has_only_default_variant ? `<small>${esc(item.variant_title)}</small>` : ''}</span>
+        <span class="cart-item__price">${item.original_line_price !== item.final_line_price ? `<s>${money(item.original_line_price)}</s>` : ''}${money(item.final_line_price)}</span>
         <div class="cart-item__qty">
-          <button data-qty="${id}" data-d="-1" aria-label="Retirer un">−</button>
-          <span>${cart[id]}</span>
-          <button data-qty="${id}" data-d="1" aria-label="Ajouter un">+</button>
+          <button data-key="${esc(item.key)}" data-qty="${item.quantity - 1}" aria-label="Retirer un">−</button>
+          <span>${item.quantity}</span>
+          <button data-key="${esc(item.key)}" data-qty="${item.quantity + 1}" aria-label="Ajouter un">+</button>
         </div>
-        <button class="cart-item__remove" data-remove="${id}">Supprimer</button>
+        <button class="cart-item__remove" data-key="${esc(item.key)}" data-qty="0">Supprimer</button>
+        ${(item.line_level_discount_allocations || []).map(d => `<span class="cart-item__discount">${esc(d.discount_application.title)} −${money(d.amount)}</span>`).join('')}
       </div>`).join('') +
-      (t.disc ? `<div class="cart-item"><span class="cart-item__name">Remise mur −${wallDiscount(cart.vault33) * 100} %</span><span class="cart-item__price">−${fmt(t.disc)}</span></div>` : '')
+      (cart.cart_level_discount_applications || []).map(d => `<div class="cart-item"><span class="cart-item__name">${esc(d.title)}</span><span class="cart-item__price">−${money(d.total_allocated_amount)}</span></div>`).join('')
       : '<p class="cart__empty">Votre panier est vide.</p>';
+    $('#cartTotal').textContent = money(cart.total_price);
+    $('#checkout').classList.toggle('is-disabled', !cart.item_count);
+    return cart;
+  }
+  const refreshCart = () => cartGet().then(renderCart);
 
-    $('#cartShipping').textContent = 'Livraison et paiement sécurisé sur l\'étape suivante.';
-    $('#cartTotal').textContent = fmt(t.total);
-    $('#checkout').disabled = !t.count;
+  const drawer = () => $('#cart');
+  function openCart() {
+    const d = drawer(); if (!d) return;
+    d.classList.add('is-open'); d.setAttribute('aria-hidden', 'false');
+    $('#overlay').hidden = false;
+    $('#cartClose').focus();
+  }
+  function closeCart() {
+    const d = drawer(); if (!d) return;
+    d.classList.remove('is-open'); d.setAttribute('aria-hidden', 'true');
+    $('#overlay').hidden = true;
   }
 
   function initCart() {
-    const drawer = $('#cart'), overlay = $('#overlay');
-    const open = () => { drawer.classList.add('is-open'); drawer.setAttribute('aria-hidden', 'false'); overlay.hidden = false; $('#cartClose').focus(); };
-    const close = () => { drawer.classList.remove('is-open'); drawer.setAttribute('aria-hidden', 'true'); overlay.hidden = true; };
-    $('#cartOpen').addEventListener('click', open);
-    $('#cartClose').addEventListener('click', close);
-    overlay.addEventListener('click', close);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    if (!drawer()) return;
+    // Sur la page panier, le lien mène à la page ; ailleurs il ouvre le tiroir
+    $('#cartOpen')?.addEventListener('click', e => {
+      if (document.body.classList.contains('template-cart')) return;
+      e.preventDefault();
+      refreshCart().catch(() => {});
+      openCart();
+    });
+    $('#cartClose').addEventListener('click', closeCart);
+    $('#overlay').addEventListener('click', closeCart);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
 
     $('#cartItems').addEventListener('click', e => {
-      const q = e.target.closest('[data-qty]'), r = e.target.closest('[data-remove]');
-      if (q) {
-        const id = q.dataset.qty;
-        cart[id] += Number(q.dataset.d);
-        if (cart[id] <= 0) delete cart[id];
-      } else if (r) delete cart[r.dataset.remove];
-      else return;
-      save(); renderCart();
+      const btn = e.target.closest('[data-key]');
+      if (!btn) return;
+      btn.disabled = true;
+      cartChange(btn.dataset.key, Number(btn.dataset.qty)).catch(err => toast(err.message));
     });
 
-    $('#checkout').addEventListener('click', () => {
-      // Permalien de panier Shopify : /cart/variante:quantité,… ouvre directement le checkout.
-      // Les remises mur sont appliquées automatiquement par Shopify.
-      const items = Object.entries(cart).map(([id, q]) => `${byId[id].variant}:${q}`).join(',');
-      if (items) location.href = `${SHOPIFY_STORE}/cart/${items}`;
+    // Formulaires « Ajouter au panier » : envoi AJAX, repli sur l'envoi classique sans JS
+    document.addEventListener('submit', async e => {
+      const form = e.target.closest('form[data-ajax-cart]');
+      if (!form) return;
+      e.preventDefault();
+      const fd = new FormData(form);
+      const btn = form.querySelector('[type="submit"]');
+      if (btn) btn.disabled = true;
+      try {
+        await cartAdd([{ id: Number(fd.get('id')), quantity: Math.max(1, Number(fd.get('quantity')) || 1) }]);
+        openCart();
+      } catch (err) {
+        toast(err.message);
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     });
-    renderCart();
   }
 
-  /* ---------- Formulaires ---------- */
-  function initForms() {
-    const form = $('#contactForm'), status = $('#formStatus');
-    form?.addEventListener('submit', e => {
-      e.preventDefault();
-      let ok = true;
-      $$('[required]', form).forEach(f => {
-        const bad = !f.value.trim() || (f.type === 'email' && !/^\S+@\S+\.\S+$/.test(f.value));
-        f.classList.toggle('is-invalid', bad);
-        if (bad) ok = false;
-      });
-      if (!ok) { status.textContent = 'Merci de remplir tous les champs correctement.'; status.className = 'form__status err'; return; }
-      const d = Object.fromEntries(new FormData(form));
-      const body = `${d.message}\n\n${d.name} · ${d.email}`;
-      location.href = `mailto:contact@aegisvault.fr?subject=${encodeURIComponent(d.subject)}&body=${encodeURIComponent(body)}`;
-      status.textContent = 'Votre messagerie va s\'ouvrir avec le message prêt à envoyer.';
-      status.className = 'form__status ok';
-    });
-
-    $('#newsletterForm')?.addEventListener('submit', e => {
-      e.preventDefault();
-      e.target.reset();
-      toast('Merci ! Vous êtes inscrit à la newsletter.');
-    });
+  /* ---------- Fiche produit ---------- */
+  function initProduct() {
+    $$('[data-qty-step]').forEach(btn => btn.addEventListener('click', () => {
+      const input = btn.parentElement.querySelector('input');
+      input.value = Math.max(1, (Number(input.value) || 1) + Number(btn.dataset.qtyStep));
+    }));
+    $$('[data-variant-select]').forEach(sel => sel.addEventListener('change', () => {
+      const opt = sel.selectedOptions[0];
+      const form = sel.closest('form');
+      const price = $('[data-product-price] [data-price]');
+      if (price) price.textContent = opt.dataset.price;
+      const submit = form.querySelector('[type="submit"]');
+      const available = opt.dataset.available === 'true';
+      submit.disabled = !available;
+      submit.textContent = available ? 'Ajouter au panier' : 'Épuisé';
+      const url = new URL(location.href);
+      url.searchParams.set('variant', sel.value);
+      history.replaceState(null, '', url);
+    }));
   }
 
   /* ---------- UI générale ---------- */
   let toastTimer;
   function toast(msg) {
     const el = $('#toast');
+    if (!el) return;
     el.textContent = msg;
     el.classList.add('is-visible');
     clearTimeout(toastTimer);
@@ -437,31 +423,43 @@
 
   function initUI() {
     const header = $('.header'), burger = $('#burger'), nav = $('#nav');
-    const onScroll = () => header.classList.toggle('is-scrolled', scrollY > 10);
-    addEventListener('scroll', onScroll, { passive: true }); onScroll();
-
-    burger.addEventListener('click', () => {
+    if (header) {
+      const onScroll = () => header.classList.toggle('is-scrolled', scrollY > 10);
+      addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    }
+    burger?.addEventListener('click', () => {
       const open = burger.getAttribute('aria-expanded') !== 'true';
       burger.setAttribute('aria-expanded', open);
       nav.classList.toggle('is-open', open);
     });
-    nav.addEventListener('click', e => {
+    nav?.addEventListener('click', e => {
       if (e.target.closest('a')) { burger.setAttribute('aria-expanded', 'false'); nav.classList.remove('is-open'); }
     });
 
-    const io = 'IntersectionObserver' in window && new IntersectionObserver(entries => {
+    // Dans l'éditeur de thème, tout reste visible
+    const io = !window.Shopify?.designMode && 'IntersectionObserver' in window && new IntersectionObserver(entries => {
       entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('is-visible'); io.unobserve(en.target); } });
     }, { threshold: 0.12 });
     $$('.reveal').forEach(el => (io ? io.observe(el) : el.classList.add('is-visible')));
 
-    $('#year').textContent = new Date().getFullYear();
+    $$('[data-toggle-recover]').forEach(a => a.addEventListener('click', e => {
+      e.preventDefault();
+      $('#recover')?.classList.toggle('is-open');
+    }));
   }
 
-  renderProducts();
-  initHero();
-  drawPlan($('#vaultPlan'));
-  initConfig();
-  initCart();
-  initForms();
-  initUI();
+  function init() {
+    initArt();
+    initHero();
+    $$('[data-wall-config]').forEach(initConfig);
+    initCart();
+    initProduct();
+    initUI();
+  }
+  document.addEventListener('DOMContentLoaded', init);
+  // Éditeur de thème : réinitialiser une section rechargée
+  document.addEventListener('shopify:section:load', e => {
+    initArt(e.target); initHero(e.target); $$('[data-wall-config]', e.target).forEach(initConfig);
+    $$('.reveal', e.target).forEach(el => el.classList.add('is-visible'));
+  });
 })();

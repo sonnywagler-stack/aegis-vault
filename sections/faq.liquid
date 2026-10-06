@@ -1,0 +1,51 @@
+<section class="section{% if section.settings.alt %} section--alt{% endif %}" id="{{ section.settings.anchor | default: section.id }}">
+  <div class="container container--narrow">
+    <header class="section__head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h2>{{ section.settings.heading }}</h2>
+    </header>
+    <div class="faq">
+      {%- for block in section.blocks -%}
+        <details class="reveal" {{ block.shopify_attributes }}>
+          <summary>{{ block.settings.question }}</summary>
+          <div class="faq__answer">{{ block.settings.answer }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Ancre", "default": "faq" },
+    { "type": "checkbox", "id": "alt", "label": "Fond alterné", "default": true },
+    { "type": "text", "id": "eyebrow", "label": "Surtitre", "default": "FAQ" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Questions fréquentes" }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "Votre question ?" },
+        { "type": "richtext", "id": "answer", "label": "Réponse", "default": "<p>Votre réponse.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        { "type": "question", "settings": { "question": "Quelles ETB rentrent dans le Vault 3×3 ?", "answer": "<p>Les compartiments sont dimensionnés pour le format standard d'ETB de 192 × 168 × 92 mm, avec 1,5 mm de jeu. Si votre coffret a un format spécial, mesurez-le ou écrivez-nous avant de commander.</p>" } },
+        { "type": "question", "settings": { "question": "Comment sortir une ETB d'un compartiment ?", "answer": "<p>Les cloisons dépassent d'environ 2 mm au-dessus de l'ETB : on la saisit par le dessus avec les doigts. Pour plus de confort, glissez un ruban sous le coffret.</p>" } },
+        { "type": "question", "settings": { "question": "Les modules peuvent-ils se repousser ?", "answer": "<p>Non. Les pastilles avant et gauche ont une polarité, les pastilles arrière et droite la polarité opposée. Un côté rencontre toujours son complément, quel que soit l'assemblage.</p>" } },
+        { "type": "question", "settings": { "question": "Les aimants suffisent-ils à tenir un mur ?", "answer": "<p>Ils alignent les modules et les maintiennent côte à côte, mais ne remplacent pas les freins. Bloquez les roulettes une fois le mur en place.</p>" } },
+        { "type": "question", "settings": { "question": "Comment entretenir l'acrylique ?", "answer": "<p>Chiffon microfibre et eau savonneuse. Pas d'alcool fort, pas de produit à l'ammoniaque, qui peuvent voiler le plexi.</p>" } },
+        { "type": "question", "settings": { "question": "Faites-vous du sur-mesure ?", "answer": "<p>Oui : autres formats de coffrets, grilles 2×2 ou 4×4, acrylique teinté. Décrivez votre projet via le formulaire de contact.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
