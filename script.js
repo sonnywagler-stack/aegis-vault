@@ -22,29 +22,31 @@
   const TOP_WALL = V.base + V.wall;            // 104
   const TOP_CELL = V.base + V.cell.z;          // 110 : le couvercle repose sur les cloisons
 
-  /* ---------- Catalogue (prix à ajuster) ---------- */
+  /* ---------- Catalogue ----------
+     Prix et IDs de variantes : doivent correspondre aux produits de la boutique Shopify. */
+  const SHOPIFY_STORE = 'https://a0di9y-dh.myshopify.com';
   const VAULT_PRICE = 349;
   const PRODUCTS = [
     {
-      id: 'vault33', name: 'Vault 3×3 · ETB', price: VAULT_PRICE, tag: 'Best-seller', featured: true,
+      id: 'vault33', variant: '64802603172217', name: 'Vault 3×3 · ETB', price: VAULT_PRICE, tag: 'Best-seller', featured: true,
       desc: 'Le module complet : 9 compartiments pour ETB, couvercle aimanté, 4 roulettes dont 2 à frein, 6 pastilles de liaison pour former un mur.',
       specs: ['617 × 545 mm', '9 ETB', 'PMMA coulé 8 mm', '18 aimants N52', '≈ 14 kg'],
       art: () => isoVault({ lift: 90, scale: 0.38, w: 520, h: 360 }),
     },
     {
-      id: 'etb-solo', name: 'Vitrine ETB solo', price: 39.9, tag: 'Nouveau',
+      id: 'etb-solo', variant: '64802603499897', name: 'Vitrine ETB solo', price: 39.9, tag: 'Nouveau',
       desc: 'Un boîtier acrylique pour une seule ETB, à poser sur une étagère. Couvercle aimanté.',
       specs: ['Pour ETB 192 × 168 × 92', 'Couvercle aimanté'],
       art: () => isoSolo(),
     },
     {
-      id: 'aimants', name: "Kit 24 aimants N52", price: 9.9,
+      id: 'aimants', variant: '64802603729273', name: "Kit 24 aimants N52", price: 9.9,
       desc: 'Aimants néodyme Ø5 × 3 mm de rechange, identiques à ceux du Vault. Pour remplacer un aimant perdu ou ajouter une pastille.',
       specs: ['Ø5 × 3 mm', 'N52', '24 pièces'],
       art: () => artMagnets(),
     },
     {
-      id: 'roulettes', name: 'Lot de 4 roulettes', price: 29.9,
+      id: 'roulettes', variant: '64802603794809', name: 'Lot de 4 roulettes', price: 29.9,
       desc: 'Roulettes à platine, 2 avec frein, boulonnerie M6 fournie. Compatibles avec tous les Vault.',
       specs: ['Platine 40 × 40', '25 kg / roulette', 'H 80 mm'],
       art: () => artWheels(),
@@ -52,7 +54,7 @@
   ];
   const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
 
-  // Remise mur selon le nombre de Vault 3×3
+  // Remise mur selon le nombre de Vault 3×3 — miroir des remises automatiques Shopify
   const wallDiscount = n => (n >= 4 ? 0.10 : n >= 2 ? 0.05 : 0);
 
   const fmt = n => n.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
@@ -321,7 +323,6 @@
 
   /* ---------- Panier ---------- */
   const STORE_KEY = 'aegis-vault-cart';
-  const FREE_SHIPPING = 80, SHIPPING = 6.9;
   let cart = load();
 
   function load() {
@@ -343,9 +344,7 @@
     const sub = Object.entries(cart).reduce((s, [id, q]) => s + byId[id].price * q, 0);
     const nVault = cart.vault33 || 0;
     const disc = nVault * VAULT_PRICE * wallDiscount(nVault);
-    const afterDisc = sub - disc;
-    const ship = afterDisc === 0 || afterDisc >= FREE_SHIPPING ? 0 : SHIPPING;
-    return { sub, disc, ship, total: afterDisc + ship, count: Object.values(cart).reduce((a, b) => a + b, 0) };
+    return { sub, disc, total: sub - disc, count: Object.values(cart).reduce((a, b) => a + b, 0) };
   }
 
   function renderCart() {
@@ -366,9 +365,7 @@
       (t.disc ? `<div class="cart-item"><span class="cart-item__name">Remise mur −${wallDiscount(cart.vault33) * 100} %</span><span class="cart-item__price">−${fmt(t.disc)}</span></div>` : '')
       : '<p class="cart__empty">Votre panier est vide.</p>';
 
-    $('#cartShipping').textContent = !t.count ? 'Livraison offerte dès 80 €.'
-      : t.ship ? `Livraison ${fmt(t.ship)} · plus que ${fmt(FREE_SHIPPING - (t.sub - t.disc))} pour la livraison offerte.`
-      : 'Livraison offerte.';
+    $('#cartShipping').textContent = 'Livraison et paiement sécurisé sur l\'étape suivante.';
     $('#cartTotal').textContent = fmt(t.total);
     $('#checkout').disabled = !t.count;
   }
@@ -394,13 +391,10 @@
     });
 
     $('#checkout').addEventListener('click', () => {
-      // Pas encore de paiement en ligne : la commande part par email.
-      const t = totals();
-      const lines = Object.entries(cart).map(([id, q]) => `- ${q} × ${byId[id].name} (${fmt(byId[id].price * q)})`);
-      if (t.disc) lines.push(`- Remise mur : −${fmt(t.disc)}`);
-      lines.push(`Livraison : ${t.ship ? fmt(t.ship) : 'offerte'}`, `Total : ${fmt(t.total)}`);
-      const body = `Bonjour,\n\nJe souhaite commander :\n${lines.join('\n')}\n\nNom :\nAdresse de livraison :\n`;
-      location.href = `mailto:contact@aegisvault.fr?subject=${encodeURIComponent('Commande Aegis Vault')}&body=${encodeURIComponent(body)}`;
+      // Permalien de panier Shopify : /cart/variante:quantité,… ouvre directement le checkout.
+      // Les remises mur sont appliquées automatiquement par Shopify.
+      const items = Object.entries(cart).map(([id, q]) => `${byId[id].variant}:${q}`).join(',');
+      if (items) location.href = `${SHOPIFY_STORE}/cart/${items}`;
     });
     renderCart();
   }
